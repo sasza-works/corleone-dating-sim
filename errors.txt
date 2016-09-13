@@ -1,8 +1,0 @@
-﻿I'm sorry, but errors were detected in your script. Please correct the
-errors listed below, and try again.
-
-
-File "game/snake.rpy", line 5: is not terminated with a newline. (Check strings and parenthesis.)
-            renpy.notify(str(type(ev))
-
-Ren'Py Version: Ren'Py 6.99.11.1749

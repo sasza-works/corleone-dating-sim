@@ -1,6 +1,1 @@
-*.rpyc
-*.rpyb
-errors.txt
-log.txt
-traceback.txt
-game/saves/*
+.rpyb,.rpyc,.save,log.txt,errors.txt,traceback.txt

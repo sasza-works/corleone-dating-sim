@@ -1,1 +1,8 @@
-.rpyb,.rpyc,.save,log.txt,errors.txt,traceback.txt
+*.rpyb
+*.rpyc
+game/cache/*
+game/saves/*
+*.save
+log.txt
+errors.txt
+traceback.txt

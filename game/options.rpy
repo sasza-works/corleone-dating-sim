@@ -84,6 +84,7 @@ define config.after_load_transition = None
 
 define config.end_game_transition = None
 
+define config.log = "corleonelog.txt"
 
 ## A variable to set the transition used when the game starts does not exist.
 ## Instead, use a with statement after showing the initial scene.

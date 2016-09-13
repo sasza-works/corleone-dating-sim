@@ -1,7 +1,20 @@
 init python:
+## holy shit. events!
+    import pygame
+    renpy.log("keydown")
+    renpy.log(str(pygame.constants.KEYDOWN))
+    renpy.log("keyup")
+    renpy.log(str(pygame.constants.KEYUP))
+
 
     def spriteEvent(ev, x, y, st):
-        renpy.log("event: " + str(type(ev)))
+        ## it is receiving ALL the events. christ.
+        mousemo = str(pygame.constants.MOUSEMOTION)
+        event = str(ev.type)
+        if (event == mousemo):
+            renpy.log("beep mouse")
+        else:
+            renpy.log("sth dif")
 
     def spriteUpdate(st):
         return 0.1
@@ -28,7 +41,7 @@ init python:
         if (key == "d"):
             wormsprite.x += 50
         return
-    MyCurriedFunction = renpy.curry(MyFunction)
+    MyCurriedFunction = renpy.curry(MyFunction) ## == closure
 
 
     def goUp():

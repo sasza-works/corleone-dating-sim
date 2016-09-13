@@ -6,9 +6,10 @@ define pronoun = ('they', 'them', 'their')
 ## The game starts here.
 
 label start:
-
+    ## jump to my snake playground
     jump snek
 
+## here's some fun with vanilla ren'py
 label first:
     #play music music.chillout 
 

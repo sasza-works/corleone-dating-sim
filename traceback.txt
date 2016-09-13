@@ -1,0 +1,49 @@
+﻿I'm sorry, but an uncaught exception occurred.
+
+While running game code:
+  File "game/snake.rpy", line 71, in script
+    "grid"
+  File "game/snake.rpy", line 8, in spriteEvent
+    logger.log(str(type(ev)))
+TypeError: log() takes at least 3 arguments (2 given)
+
+-- Full Traceback ------------------------------------------------------------
+
+Full traceback:
+  File "game/snake.rpy", line 71, in script
+    "grid"
+  File "F:\renpy\renpy-6.99.11-sdk\renpy\ast.py", line 603, in execute
+    renpy.exports.say(who, what, interact=self.interact)
+  File "F:\renpy\renpy-6.99.11-sdk\renpy\exports.py", line 1135, in say
+    who(what, interact=interact)
+  File "F:\renpy\renpy-6.99.11-sdk\renpy\character.py", line 873, in __call__
+    self.do_display(who, what, cb_args=self.cb_args, **display_args)
+  File "F:\renpy\renpy-6.99.11-sdk\renpy\character.py", line 719, in do_display
+    **display_args)
+  File "F:\renpy\renpy-6.99.11-sdk\renpy\character.py", line 510, in display_say
+    rv = renpy.ui.interact(mouse='say', type=type, roll_forward=roll_forward)
+  File "F:\renpy\renpy-6.99.11-sdk\renpy\ui.py", line 278, in interact
+    rv = renpy.game.interface.interact(roll_forward=roll_forward, **kwargs)
+  File "F:\renpy\renpy-6.99.11-sdk\renpy\display\core.py", line 2496, in interact
+    repeat, rv = self.interact_core(preloads=preloads, **kwargs)
+  File "F:\renpy\renpy-6.99.11-sdk\renpy\display\core.py", line 3172, in interact_core
+    rv = root_widget.event(ev, x, y, 0)
+  File "F:\renpy\renpy-6.99.11-sdk\renpy\display\layout.py", line 928, in event
+    rv = i.event(ev, x - xo, y - yo, cst)
+  File "F:\renpy\renpy-6.99.11-sdk\renpy\display\layout.py", line 928, in event
+    rv = i.event(ev, x - xo, y - yo, cst)
+  File "F:\renpy\renpy-6.99.11-sdk\renpy\display\layout.py", line 928, in event
+    rv = i.event(ev, x - xo, y - yo, cst)
+  File "F:\renpy\renpy-6.99.11-sdk\renpy\display\screen.py", line 646, in event
+    rv = self.child.event(ev, x, y, st)
+  File "F:\renpy\renpy-6.99.11-sdk\renpy\display\layout.py", line 928, in event
+    rv = i.event(ev, x - xo, y - yo, cst)
+  File "F:\renpy\renpy-6.99.11-sdk\renpy\display\particle.py", line 311, in event
+    return self.event_function(ev, x, y, st)
+  File "game/snake.rpy", line 8, in spriteEvent
+    logger.log(str(type(ev)))
+TypeError: log() takes at least 3 arguments (2 given)
+
+Windows-8-6.2.9200
+Ren'Py 6.99.11.1749
+Corleone Dating Sim 1.0

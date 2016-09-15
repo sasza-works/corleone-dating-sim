@@ -7,13 +7,13 @@ define pronoun = ('they', 'them', 'their')
 
 label start:
     ## jump to my snake playground
-    jump snek
+   # jump snek
 
 ## here's some fun with vanilla ren'py
 label first:
     #play music music.chillout 
 
-    scene bg_gate with fade
+   scene bg_gate with fade
 
     "So what're your pronouns?"
 
@@ -46,10 +46,11 @@ label welcometimo:
 
     timo "Welcome to crime school... "
 
-    show timo pleased
+    show timo laugh with Dissolve(0.1)
 
     extend "which is for crime!"
 
+    show timo with Dissolve(0.1)
     timo "I've been wondering! {i}Where could [pronoun[0]] be?{/i}"
 
     timo "{i}Will I ever see [pronoun[1]]{/i}?"
@@ -72,7 +73,7 @@ label welcomen:
     show timo 
     timo "Of course it does!"
 
-    timo pleased "It's a grim reminder of your future."
+    timo laugh "It's a grim reminder of your future."
     jump welcome02
 
 label welcome02:

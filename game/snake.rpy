@@ -1,20 +1,17 @@
 init python:
 ## holy shit. events!
     import pygame
-    renpy.log("keydown")
-    renpy.log(str(pygame.constants.KEYDOWN))
-    renpy.log("keyup")
-    renpy.log(str(pygame.constants.KEYUP))
-
 
     def spriteEvent(ev, x, y, st):
         ## it is receiving ALL the events. christ.
-        mousemo = str(pygame.constants.MOUSEMOTION)
+        mousemo = str(pygame.constants.KEYUP)
         event = str(ev.type)
         if (event == mousemo):
-            renpy.log("beep mouse")
-        else:
-            renpy.log("sth dif")
+            renpy.log("key press!")
+            renpy.log(str(ev.unicode))
+            renpy.log(str(ev.key))
+
+        
 
     def spriteUpdate(st):
         return 0.1

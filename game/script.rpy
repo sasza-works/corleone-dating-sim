@@ -1,6 +1,7 @@
 ﻿## Declare characters used by this game. The color argument colorizes the name
 ## of the character.
 define timo = Character('Timo', color="#00b6ef", image="timo")
+define trisha = Character('Trisha', color="#c1d26a", image="trisha")
 define pronoun = ('they', 'them', 'their')
 
 ## The game starts here.
@@ -8,7 +9,11 @@ define pronoun = ('they', 'them', 'their')
 label start:
     ## jump to my snake playground
    # jump snek
-   jump first
+    scene bg_gate with fade
+    show trisha at center
+    show timo rage at right with moveinright
+    trisha "..."
+    jump first
 
 ## here's some fun with vanilla ren'py
 label first:
@@ -47,7 +52,7 @@ label welcometimo:
 
     timo "Welcome to crime school... "
 
-    show timo laugh with Dissolve(0.1)
+    show timo laugh 
 
     extend "which is for crime!"
 

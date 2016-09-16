@@ -48,7 +48,7 @@ define gui.muted_color = '#00513d'
 define gui.hover_muted_color = '#007a5b'
 
 ## The colors used for dialogue and menu choice text.
-define gui.text_color = '#8d8d8d'
+define gui.text_color = '#ffffff'
 define gui.interface_text_color = '#ffffff'
 
 
@@ -102,13 +102,13 @@ define gui.textbox_height = 192
 
 ## The placement of the textbox vertically on the screen. 0.0 is the top, 0.5 is
 ## center, and 1.0 is the bottom.
-define gui.textbox_yalign = 0.5
+define gui.textbox_yalign = 0.0
 
 
 ## The placement of the speaking character's name, relative to the textbox.
 ## These can be a whole number of pixels from the left or top, or 0.5 to center.
-define gui.name_xpos = 64
-define gui.name_ypos = 8
+define gui.name_xpos = 272
+define gui.name_ypos = 16
 
 ## The horizontal alignment of the character's name. This can be 0.0 for left-
 ## aligned, 0.5 for centered, and 1.0 for right-aligned.
@@ -131,11 +131,11 @@ define gui.namebox_tile = False
 ## The placement of dialogue relative to the textbox. These can be a whole
 ## number of pixels relative to the left or top side of the textbox, or 0.5 to
 ## center.
-define gui.text_xpos = 128
-define gui.text_ypos = 50
+define gui.text_xpos = 288
+define gui.text_ypos = 72
 
 ## The maximum width of dialogue text, in pixels.
-define gui.text_width = 704
+define gui.text_width = 736
 
 ## The horizontal alignment of the dialogue text. This can be 0.0 for left-
 ## aligned, 0.5 for centered, and 1.0 for right-aligned.

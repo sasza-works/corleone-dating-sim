@@ -22,7 +22,7 @@ label ruben01:
     extend "except there is no lever."
     ruben "you can only stop the train by pushing something heavy in front of it."
     ruben "chance has it that you see a really fat [lever] right next to you. what do you..."
-    show louise at left
+    show louise behind ruben at right with moveinright
     louise "what was that about fat people??"
     show ruben blush
     ruben "um. it's just a thought experiment..."

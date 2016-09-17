@@ -8,7 +8,7 @@ define pronoun = ('they', 'them', 'their')
 
 label start:
     ## jump to my snake playground
-   # jump snek
+    jump snek
     scene bg_gate with fade
     show trisha at center
     show timo rage at right with moveinright
@@ -17,7 +17,7 @@ label start:
 
 ## here's some fun with vanilla ren'py
 label first:
-    #play music music.chillout 
+    #play music chillout 
 
     scene bg_gate with fade
 

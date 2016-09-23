@@ -3,89 +3,215 @@ init python:
     import pygame
 
     score = 0
+    direction = { "up" : -1, "down" : 1, "left": -10, "right": 10 }
+    scale = 50;
+    snakeRange = [ (0,0), (13,0), (13,11), (0,11) ] 
+    wormsprite = list()
 
     def spriteEvent(ev, x, y, st):
         ## it is receiving ALL the events. christ.
-        keyup = str(pygame.constants.KEYUP)
-        event = str(ev.type)
-        if (event == keyup):
-            renpy.log("wormsprite position:")
-            renpy.log(str(wormsprite.x) + " // " + str(wormsprite.y))
-            for item in items:
-                if (wormsprite.x == item.x and wormsprite.y == item.y):
-                    renpy.log("worm ate the item")
-                    item.x = renpy.random.randint(1, 15) * 50
-                    item.y = renpy.random.randint(1, 14) * 50
-                    renpy.log("gonna show next item at " + str(item.x) + " " + str(item.y))
-                    renpy.sound.play(snekeatersounds())
-                    global score
-                    score = score + 1
-                    renpy.notify("score: " + str(score))
+        return
+        #keyup = str(pygame.constants.KEYUP)
+        #event = str(ev.type)
+
+    def isInRange(coord):
+        x = coord[0]
+        y = coord[1]
+        xmin = snakeRange[0][0] * scale
+        xmax = snakeRange[1][0] * scale
+
+        ymin = snakeRange[1][1] * scale
+        ymax = snakeRange[2][1] * scale
+
+        return (x >= xmin and x <= xmax) and (y >= ymin and y <= ymax)
+
+    def getFuturePosition(): 
+        futurex = wormsprite[0].x
+        futurey = wormsprite[0].y
+        if (playerdirection == direction["up"]):
+            futurey -= scale
+        if (playerdirection == direction["down"]):
+            futurey += scale
+        if (playerdirection == direction["left"]):
+            futurex -= scale
+        if (playerdirection == direction["right"]):
+            futurex += scale
+        return (futurex, futurey)
+
+    def updatePositions(coords):
+        x = coords[0]
+        y = coords[1]
+        for member in wormsprite:    
+            x1 = member.x
+            y1 = member.y
+            member.x = x
+            member.y = y
+            x = x1 
+            y = y1
+        return (x,y)
+
+    def addToTail(coords):
+        tail = spritemanager.create("ball.png")
+        tail.x = coords[0]
+        tail.y = coords[1]
+        wormsprite.append(tail)
+
+    def checkAgainstSelf(coords):
+        renpy.log("CHECK AGAINST SELF...")
+        renpy.log("updated position: " + str(coords[0]) + ", " + str(coords[1]))
+        for index in range(len(wormsprite)):
+            renpy.log(str(index) + ": " + str(wormsprite[index].x) + ", " + str(wormsprite[index].y))
+            if (index == 0): 
+                continue
+            equalx = wormsprite[index].x == coords[0]
+            equaly = wormsprite[index].y == coords[1]
+            if (equalx and equaly):
+                renpy.log("!!!--END: COLLISION")
+                collision()
+                return False
+        return True
+        renpy.log("--END: NO COLLISION")
+
+    def collisionCheck(coord):
+        if isInRange(coord):
+            return True 
+        else:
+            collision()
+            return False
+
+
+    def collision():
+        renpy.sound.play(audio.snekmiss)
+        renpy.jump("snekend")
+
+    def eatCheck():
+        for item in items:
+            if (wormsprite[0].x == item.x and wormsprite[0].y == item.y):
+                item.x = renpy.random.randint(snakeRange[0][0], snakeRange[1][0]) * scale
+                item.y = renpy.random.randint(snakeRange[1][1], snakeRange[2][1]) * scale
+                renpy.sound.play(snekeatersounds())
+                global score
+                score = score + 1
+                renpy.notify("score: " + str(score))
 
     def spriteUpdate(st):
-        return 0.1
+        coord = getFuturePosition()
+        if (collisionCheck(coord) and checkAgainstSelf(coord)):
+            eatCheck()
+            lastcoords = updatePositions(coord)
+            if score >= len(wormsprite):
+                addToTail(lastcoords) 
+        return 0.2
 
-    spritemanager = SpriteManager(update=spriteUpdate, event=spriteEvent)
-    itemsprite = spritemanager.create("snow.png")
-    wormsprite = spritemanager.create("ball.png")
 
-    items = [ itemsprite ]
+    def initSnek():
+        renpy.log("INIT SNEEEEK")
+        global spritemanager
+        global itemsprite 
+        global wormsprite 
+        global playerdirection 
+        global items 
+        global itemsprite
+        global score 
+        score = 0
+        spritemanager = SpriteManager(update=spriteUpdate, event=spriteEvent)
+        itemsprite = spritemanager.create("snow.png")
+        head = spritemanager.create("ball.png")
+        head.x = 150
+        head.y = 100 
+        wormsprite = list()
+        wormsprite.append(head)
+        playerdirection = direction["down"]
+        items = [ itemsprite ]
+        itemsprite.x = 250
+        itemsprite.y = 200  
 
-    itemsprite.x = 250
-    itemsprite.y = 200
+    def cleanSnek():
+        global wormsprite 
+        global items 
+        global spritemanager
+        del spritemanager
+        del wormsprite 
+        del items 
+        renpy.notify("CLEANIIIIING")
 
     def MyFunction(key):
         if (key == "m"):
-            renpy.hide_screen("grid")
+            renpy.hide_screen("snek")
             renpy.jump("first")
-        if (key == "w"):
-            wormsprite.y -= 50
-        if (key == "a"):
-            wormsprite.x -= 50
-        if (key == "s"):
-            wormsprite.y += 50
-        if (key == "d"):
-            wormsprite.x += 50
         return
 
     MyCurriedFunction = renpy.curry(MyFunction) ## == closure
 
 
+    def changeDirection(newdirection):
+        global playerdirection
+        if (playerdirection + newdirection == 0):
+            return
+        playerdirection = newdirection
+        return
+
     def goUp():
-        wormsprite.y -= 50
+        newdirection = direction["up"]
+        changeDirection(newdirection)
         return
 
     def goDown():
-        wormsprite.y += 50
+        newdirection = direction["down"]
+        changeDirection(newdirection)
         return
 
     def goLeft():
-        wormsprite.x -= 50
+        newdirection = direction["left"]
+        changeDirection(newdirection)
         return
 
     def goRight():
-        wormsprite.x += 50
+        newdirection = direction["right"]
+        changeDirection(newdirection)
         return
 
-screen grid():
+
+
+screen snek():
+    modal True  
+    tag snake
+    frame:
+        xalign 0.5
+        yalign 0.5
+
+        fixed:
+            xmaximum 700
+            ymaximum 600
+            add LiveTile("tile.png")
+            add spritemanager
+            key "w" action goUp
+            key "a" action goLeft
+            key "s" action goDown
+            key "d" action goRight
+            key "m" action MyCurriedFunction("m")
+
+screen sneklose(score):
     modal True
     tag snake
-    add LiveTile("tile.png")
-    add spritemanager
+    frame:
+        xalign 0.5
+        yalign 0.5
 
-    key "w" action goUp
-    key "a" action goLeft
-    key "s" action goDown
-    key "d" action goRight
-    key "m" action MyCurriedFunction("m")
+        text _("Score: " + str(score))
     
 label snek: 
-    show wormsprite at left
-    show screen grid
-    #python:
-    #    
-    #    
-    "booty"
-   # show expression spritemanager as spritemanager
-    #hide spritemanager
-    jump enterpronouns
+    $ initSnek()
+    call screen snek
+
+label snekend:
+    hide screen snek
+    $ cleanSnek()
+    show screen sneklose(score)
+    menu: 
+        "try again":
+            hide screen sneklose
+            jump snek
+        "no thanks I'm good":
+            hide screen sneklose
+            jump first

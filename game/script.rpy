@@ -1,5 +1,6 @@
 ﻿## Declare characters used by this game. The color argument colorizes the name
 ## of the character.
+
 define timo = Character('Timo', color="#00b6ef", image="timo")
 define trisha = Character('Trisha', color="#c1d26a", image="trisha")
 define pronoun = ('they', 'them', 'their')
@@ -25,15 +26,15 @@ label first:
 
     menu:
         "They/Them/Their":
-            jump welcometimo
+            jump welcome
 
         "He/Him/His":
             $ pronoun = ('he', 'him', 'his');
-            jump welcometimo
+            jump welcome
 
         "She/Her":
             $ pronoun = ('she', 'her', 'her');
-            jump welcometimo
+            jump welcome
 
         "Um, actually...":
             jump enterpronouns
@@ -45,9 +46,9 @@ label enterpronouns:
         acc = renpy.input("Enter your preferred pronoun for this sentence:\nMeet {b}(pronoun){/b} in the courtyard.")
         gen = renpy.input("Enter your preferred pronoun for this sentence:\nThis is {b}(pronouns){/b} room.")
         pronoun = (nom, acc, gen);
-    jump welcometimo
+    jump welcome
 
-label welcometimo:
+label welcome:
     show timo at right with moveinright
 
     timo "Welcome to crime school... "
@@ -65,28 +66,54 @@ label welcometimo:
 
     menu:
         "Finally, I've found it!":
-            jump welcomep
+            timo "No hard feelings. This facility was built to be hard to find."
 
         "... It looks like a jail...":
-            jump welcomen
+            timo "Of course it does!"
+            timo laugh "It's a grim reminder of your future."
 
-label welcomep:
-    timo "No hard feelings. This facility was built to be hard to find."
-    jump welcome02
-
-
-label welcomen:
-    show timo 
-    timo "Of course it does!"
-
-    timo laugh "It's a grim reminder of your future."
-    jump welcome02
-
-label welcome02:
     timo "Come on inside now. Let me show you around!"
-    "--- years later ---"
-    hide timo
-    jump ruben01
+    
+    jump .atrium
+
+label .atrium:
+    
+    scene bg_atrium with fade
+    show timo at right
+    timo "This is the atrium. It's the hub of activity, what with the stairwells and the cafeteria."
+    timo "Speaking of which, I'm only just realising I've lived off two Snickers for the last 24 hours..."
+    timo "I'm gonna pop into the cafeteria for a bit."
+
+    menu:
+        "I'll come with!":
+            jump ruben01
+
+        "I'd rather wait here":
+            hide timo with moveoutright
+            "You use this quiet moment to look around."
+            jump trisha.intro
+
+label trisha:
+    show trisha with moveinright
+
+label .intro:
+    show trisha with moveinright
+
+    "You see a heavily tattooed butch reading a book."
+    menu:
+        "Talk to her":
+            jump .first
+
+        "I'd rather not.":
+            jump ruben01
+
+label .first:
+    $ masculine = pronoun == ('he', 'him', 'his')
+    if masculine:
+        trisha "Sod off, I'm tryin tae read."
+    else:
+        trisha "You need something?"
+
 
     ## This ends the game.
 

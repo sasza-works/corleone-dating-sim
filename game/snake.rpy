@@ -8,11 +8,16 @@ init python:
     snakeRange = [ (0,0), (13,0), (13,11), (0,11) ] 
     wormsprite = list()
 
+    def defaultSnekCallback(score):
+        renpy.log("default snake callback. score: " + str(score))
+        return
+
+    snekCallback = defaultSnekCallback
+
     def spriteEvent(ev, x, y, st):
         ## it is receiving ALL the events. christ.
         return
         #keyup = str(pygame.constants.KEYUP)
-        #event = str(ev.type)
 
     def isInRange(coord):
         x = coord[0]
@@ -57,20 +62,15 @@ init python:
         wormsprite.append(tail)
 
     def checkAgainstSelf(coords):
-        renpy.log("CHECK AGAINST SELF...")
-        renpy.log("updated position: " + str(coords[0]) + ", " + str(coords[1]))
         for index in range(len(wormsprite)):
-            renpy.log(str(index) + ": " + str(wormsprite[index].x) + ", " + str(wormsprite[index].y))
             if (index == 0): 
                 continue
             equalx = wormsprite[index].x == coords[0]
             equaly = wormsprite[index].y == coords[1]
             if (equalx and equaly):
-                renpy.log("!!!--END: COLLISION")
                 collision()
                 return False
         return True
-        renpy.log("--END: NO COLLISION")
 
     def collisionCheck(coord):
         if isInRange(coord):
@@ -82,7 +82,8 @@ init python:
 
     def collision():
         renpy.sound.play(audio.snekmiss)
-        renpy.jump("snekend")
+        renpy.log("collision")
+        showScoreBoard(score, nextScene)
 
     def eatCheck():
         for item in items:
@@ -95,16 +96,19 @@ init python:
                 renpy.notify("score: " + str(score))
 
     def spriteUpdate(st):
+        speed = 0.2
         coord = getFuturePosition()
         if (collisionCheck(coord) and checkAgainstSelf(coord)):
             eatCheck()
             lastcoords = updatePositions(coord)
             if score >= len(wormsprite):
-                addToTail(lastcoords) 
-        return 0.2
+                addToTail(lastcoords)
+                if score > 0:
+                    speed =- 100/score 
+        return speed
 
 
-    def initSnek():
+    def initSnek(pNextScene, pCallback=defaultSnekCallback):
         renpy.log("INIT SNEEEEK")
         global spritemanager
         global itemsprite 
@@ -112,7 +116,11 @@ init python:
         global playerdirection 
         global items 
         global itemsprite
-        global score 
+        global score
+        global nextScene
+        global callback
+        snekCallback = pCallback
+        nextScene = pNextScene
         score = 0
         spritemanager = SpriteManager(update=spriteUpdate, event=spriteEvent)
         itemsprite = spritemanager.create("snow.png")
@@ -124,7 +132,9 @@ init python:
         playerdirection = direction["down"]
         items = [ itemsprite ]
         itemsprite.x = 250
-        itemsprite.y = 200  
+        itemsprite.y = 200
+        renpy.call_screen("snek", pNextScene)
+
 
     def cleanSnek():
         global wormsprite 
@@ -133,16 +143,17 @@ init python:
         del spritemanager
         del wormsprite 
         del items 
-        renpy.notify("CLEANIIIIING")
 
-    def MyFunction(key):
-        if (key == "m"):
-            renpy.hide_screen("snek")
-            renpy.jump("first")
-        return
+    def exitSnek(label):
+        renpy.log("exit snek. jumping to... " + str(label))
+        renpy.hide_screen("snake")
+        renpy.jump(label)
 
-    MyCurriedFunction = renpy.curry(MyFunction) ## == closure
+    ExitAndJumpTo = renpy.curry(exitSnek)
 
+    def showScoreBoard(score, label):
+        pscore = score
+        renpy.call("snekMenu", score, label)
 
     def changeDirection(newdirection):
         global playerdirection
@@ -171,10 +182,8 @@ init python:
         changeDirection(newdirection)
         return
 
-
-
-screen snek():
-    modal True  
+screen snek(nextScene):
+    modal True
     tag snake
     frame:
         xalign 0.5
@@ -189,29 +198,21 @@ screen snek():
             key "a" action goLeft
             key "s" action goDown
             key "d" action goRight
-            key "m" action MyCurriedFunction("m")
-
-screen sneklose(score):
-    modal True
-    tag snake
-    frame:
-        xalign 0.5
-        yalign 0.5
-
-        text _("Score: " + str(score))
+            key "m" action ExitAndJumpTo(nextScene)
     
 label snek: 
-    $ initSnek()
-    call screen snek
+    $ initSnek("first") # parametrise method wiRth label we're jumping to after
+    # give this method a callback which will be processed when user is done playing as a 2nd parameter
 
-label snekend:
-    hide screen snek
-    $ cleanSnek()
-    show screen sneklose(score)
-    menu: 
+#TODO the control flow isn't quite right. errors happening at the end of the game.
+label snekMenu(score, nextScene):
+    show text "Score: [score]"
+    menu:
         "try again":
-            hide screen sneklose
-            jump snek
-        "no thanks I'm good":
-            hide screen sneklose
-            jump first
+            call snek(nextScene)
+        "no thanks i'm good":
+            if snekCallback == None:
+                jump expression nextScene
+            else:
+                $ snekCallback(score)
+                jump expression nextScene

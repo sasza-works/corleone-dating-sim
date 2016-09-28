@@ -9,7 +9,9 @@ define pronoun = ('they', 'them', 'their')
 
 label start:
     ## jump to my snake playground
-    jump snek
+    call snek 
+    # give this method a callback which will be processed when user is done playing as a 2nd parameter
+    $ renpy.log("start: score of snek " + str(_return))
     scene bg_gate with fade
     show trisha at center
     show timo rage at right with moveinright
@@ -91,10 +93,12 @@ label .atrium:
         "I'd rather wait here":
             hide timo with moveoutright
             "You use this quiet moment to look around."
-            jump trisha.intro
+            jump trisha
 
 label trisha:
     show trisha with moveinright
+    "You see a heavily tattooed butch. She is kind of hard to miss, actually."
+    call interactionmenu pass (approach="trisha.first", observe="trisha.observe", leave="ruben01")
 
 label .intro:
     show trisha with moveinright
@@ -106,6 +110,10 @@ label .intro:
 
         "I'd rather not.":
             jump ruben01
+
+label .observe:
+    "She is reading a rather massive looking softcover. It takes a bit of effort to figure out the writing on the bent spine."
+    "It turns out to be {i}Philosophy of Language{/i} by {i}William Lycan{/i}."
 
 label .first:
     $ masculine = pronoun == ('he', 'him', 'his')

@@ -2,187 +2,187 @@ init python:
 ## holy shit. events!
     import pygame
 
-    score = 0
-    direction = { "up" : -1, "down" : 1, "left": -10, "right": 10 }
-    scale = 50;
-    snakeRange = [ (0,0), (13,0), (13,11), (0,11) ] 
-    wormsprite = list()
+    class SnakeRound:
+        def __init__(self):
+            self.score = 0
 
-    def defaultSnekCallback(score):
-        renpy.log("default snake callback. score: " + str(score))
-        return
+        def nom(self):
+            renpy.sound.play(snekeatersounds())
+            self.score += 1
+            renpy.notify("score: " + str(self.score))
 
-    snekCallback = defaultSnekCallback
 
-    def spriteEvent(ev, x, y, st):
-        ## it is receiving ALL the events. christ.
-        return
-        #keyup = str(pygame.constants.KEYUP)
+    class SnakeField:
+        direction = { "up" : -1, "down" : 1, "left": -10, "right": 10 }
 
-    def isInRange(coord):
-        x = coord[0]
-        y = coord[1]
-        xmin = snakeRange[0][0] * scale
-        xmax = snakeRange[1][0] * scale
+        def defaultIsInRange(self, coord):
+            x = coord[0]
+            y = coord[1]
+            xmin = self.snakeRange[0][0] * self.scale
+            xmax = self.snakeRange[1][0] * self.scale
 
-        ymin = snakeRange[1][1] * scale
-        ymax = snakeRange[2][1] * scale
+            ymin = self.snakeRange[0][1] * self.scale
+            ymax = self.snakeRange[1][1] * self.scale
 
-        return (x >= xmin and x <= xmax) and (y >= ymin and y <= ymax)
+            return (x >= xmin and x <= xmax) and (y >= ymin and y <= ymax)
 
-    def getFuturePosition(): 
-        futurex = wormsprite[0].x
-        futurey = wormsprite[0].y
-        if (playerdirection == direction["up"]):
-            futurey -= scale
-        if (playerdirection == direction["down"]):
-            futurey += scale
-        if (playerdirection == direction["left"]):
-            futurex -= scale
-        if (playerdirection == direction["right"]):
-            futurex += scale
-        return (futurex, futurey)
+        def spriteUpdate(self, st):
+            speed = self.speed
+            coord = self.getFuturePosition()
+            if (self.checkAgainstWalls(coord) and self.checkAgainstSelf(coord)):
+                self.eatCheck()
+                lastcoords = self.updatePositions(coord)
+                if self.snakeRound.score >= len(self.wormsprite):
+                    self.addToTail(lastcoords)
+                    if self.snakeRound.score > 0:
+                        speed = speed - (self.snakeRound.score*0.01)
+                        self.speed = speed
+                return speed
+            return 0
 
-    def updatePositions(coords):
-        x = coords[0]
-        y = coords[1]
-        for member in wormsprite:    
-            x1 = member.x
-            y1 = member.y
-            member.x = x
-            member.y = y
-            x = x1 
-            y = y1
-        return (x,y)
 
-    def addToTail(coords):
-        tail = spritemanager.create("ball.png")
-        tail.x = coords[0]
-        tail.y = coords[1]
-        wormsprite.append(tail)
+        def __init__(self, speed=None, snakeRange=None, isInRange=None, wormsprite=None, scale=None, snakeRound=None, playerDirection=None):
+            #spriteUpdate = renpy.curry(self.spriteUpdateSelf)
+            self.spritemanager = SpriteManager(update=self.spriteUpdate)
 
-    def checkAgainstSelf(coords):
-        for index in range(len(wormsprite)):
-            if (index == 0): 
-                continue
-            equalx = wormsprite[index].x == coords[0]
-            equaly = wormsprite[index].y == coords[1]
-            if (equalx and equaly):
-                collision()
+            itemsprite = self.spritemanager.create("snow.png")
+            itemsprite.x = 250
+            itemsprite.y = 200
+            self.items = [ itemsprite ]
+            
+            if speed is None:
+                self.speed = 0.2
+            else:
+                self.speed = speed
+            if snakeRange is None:
+                self.snakeRange = [ (0,0), (13,11) ]
+            else:
+                self.snakeRange = snakeRange
+
+            if isInRange is None:
+                self.isInRange = self.defaultIsInRange
+
+            if wormsprite is None:
+                head = self.spritemanager.create("ball.png")
+                head.x = 150
+                head.y = 100 
+                self.wormsprite = list()
+                self.wormsprite.append(head)
+            else:
+                self.wormsprite = wormsprite
+            if scale is None:
+                self.scale = 50
+            else:
+                self.scale = scale
+            if snakeRound is None:
+                self.snakeRound = SnakeRound()
+            else:
+                self.snakeRound = snakeRound
+            if playerDirection is None:
+                self.playerDirection = self.direction["down"]
+            else:
+                self.playerDirection = playerDirection
+
+        def isInRange(self, coord):
+            return self.isInRange(coord)
+
+        def changeDirection(self, direction):
+            self.playerDirection = direction
+
+        def getFuturePosition(self): 
+            futurex = self.wormsprite[0].x
+            futurey = self.wormsprite[0].y
+            if (self.playerDirection == self.direction["up"]):
+                futurey -= self.scale
+            if (self.playerDirection == self.direction["down"]):
+                futurey += self.scale
+            if (self.playerDirection == self.direction["left"]):
+                futurex -= self.scale
+            if (self.playerDirection == self.direction["right"]):
+                futurex += self.scale
+            return (futurex, futurey)
+
+        def updatePositions(self, coords):
+            x = coords[0]
+            y = coords[1]
+            for member in self.wormsprite:    
+                x1 = member.x
+                y1 = member.y
+                member.x = x
+                member.y = y
+                x = x1 
+                y = y1
+            return (x,y)
+
+        def addToTail(self, coords):
+            tail = self.spritemanager.create("ball.png")
+            tail.x = coords[0]
+            tail.y = coords[1]
+            self.wormsprite.append(tail)
+
+        def checkAgainstSelf(self, coords):
+            for index in range(len(self.wormsprite)):
+                if (index == 0): 
+                    continue
+                equalx = self.wormsprite[index].x == coords[0]
+                equaly = self.wormsprite[index].y == coords[1]
+                if (equalx and equaly):
+                    self.collision()
+                    return False
+            return True
+
+        def checkAgainstWalls(self, coord):
+            if self.isInRange(coord):
+                return True 
+            else:
+                self.collision()
                 return False
-        return True
 
-    def collisionCheck(coord):
-        if isInRange(coord):
-            return True 
-        else:
-            collision()
-            return False
+        def collision(self):
+            renpy.sound.play(audio.snekmiss)
+            self.endRound()
 
+        def endRound(self):
+            renpy.end_interaction(self.snakeRound.score)
 
-    def collision():
-        renpy.sound.play(audio.snekmiss)
-        renpy.log("collision")
-        showScoreBoard(score, nextScene)
+        def eatCheck(self):
+            for item in self.items:
+                if (self.wormsprite[0].x == item.x and self.wormsprite[0].y == item.y):
+                    self.snakeRound.nom()
+                    item.x = renpy.random.randint(self.snakeRange[0][0], self.snakeRange[1][0]) * self.scale
+                    item.y = renpy.random.randint(self.snakeRange[0][1], self.snakeRange[1][1]) * self.scale
 
-    def eatCheck():
-        for item in items:
-            if (wormsprite[0].x == item.x and wormsprite[0].y == item.y):
-                item.x = renpy.random.randint(snakeRange[0][0], snakeRange[1][0]) * scale
-                item.y = renpy.random.randint(snakeRange[1][1], snakeRange[2][1]) * scale
-                renpy.sound.play(snekeatersounds())
-                global score
-                score = score + 1
-                renpy.notify("score: " + str(score))
-
-    def spriteUpdate(st):
-        speed = 0.2
-        coord = getFuturePosition()
-        if (collisionCheck(coord) and checkAgainstSelf(coord)):
-            eatCheck()
-            lastcoords = updatePositions(coord)
-            if score >= len(wormsprite):
-                addToTail(lastcoords)
-                if score > 0:
-                    speed =- 100/score 
-        return speed
-
-
-    def initSnek(pNextScene, pCallback=defaultSnekCallback):
-        renpy.log("INIT SNEEEEK")
-        global spritemanager
-        global itemsprite 
-        global wormsprite 
-        global playerdirection 
-        global items 
-        global itemsprite
-        global score
-        global nextScene
-        global callback
-        snekCallback = pCallback
-        nextScene = pNextScene
-        score = 0
-        spritemanager = SpriteManager(update=spriteUpdate, event=spriteEvent)
-        itemsprite = spritemanager.create("snow.png")
-        head = spritemanager.create("ball.png")
-        head.x = 150
-        head.y = 100 
-        wormsprite = list()
-        wormsprite.append(head)
-        playerdirection = direction["down"]
-        items = [ itemsprite ]
-        itemsprite.x = 250
-        itemsprite.y = 200
-        renpy.call_screen("snek", pNextScene)
-
+        def startSnek(self):
+            renpy.log("-- start snek --")
+            spritemgr = self.spritemanager
+            renpy.call_screen("snekscreen", spritemgr)
+            score = self.snakeRound.score
+            return score 
 
     def cleanSnek():
-        global wormsprite 
-        global items 
-        global spritemanager
-        del spritemanager
-        del wormsprite 
-        del items 
-
-    def exitSnek(label):
-        renpy.log("exit snek. jumping to... " + str(label))
-        renpy.hide_screen("snake")
-        renpy.jump(label)
-
-    ExitAndJumpTo = renpy.curry(exitSnek)
-
-    def showScoreBoard(score, label):
-        pscore = score
-        renpy.call("snekMenu", score, label)
-
-    def changeDirection(newdirection):
-        global playerdirection
-        if (playerdirection + newdirection == 0):
-            return
-        playerdirection = newdirection
-        return
+        global snakeField
+        del snakeField
 
     def goUp():
-        newdirection = direction["up"]
-        changeDirection(newdirection)
+        snakeField.changeDirection(snakeField.direction["up"])
         return
 
     def goDown():
-        newdirection = direction["down"]
-        changeDirection(newdirection)
+        snakeField.changeDirection(snakeField.direction["down"])
         return
 
     def goLeft():
-        newdirection = direction["left"]
-        changeDirection(newdirection)
+        snakeField.changeDirection(snakeField.direction["left"])
         return
 
     def goRight():
-        newdirection = direction["right"]
-        changeDirection(newdirection)
+        snakeField.changeDirection(snakeField.direction["right"])
         return
 
-screen snek(nextScene):
+    def quit():
+        return snakeField.endRound()
+
+screen snekscreen(spritemanager):
     modal True
     tag snake
     frame:
@@ -198,21 +198,22 @@ screen snek(nextScene):
             key "a" action goLeft
             key "s" action goDown
             key "d" action goRight
-            key "m" action ExitAndJumpTo(nextScene)
-    
-label snek: 
-    $ initSnek("first") # parametrise method wiRth label we're jumping to after
-    # give this method a callback which will be processed when user is done playing as a 2nd parameter
+            key "m" action Return(2)
 
-#TODO the control flow isn't quite right. errors happening at the end of the game.
-label snekMenu(score, nextScene):
+# control flow still not completely proper
+label snekMenu(score):
     show text "Score: [score]"
     menu:
         "try again":
-            call snek(nextScene)
+            jump snek
         "no thanks i'm good":
-            if snekCallback == None:
-                jump expression nextScene
-            else:
-                $ snekCallback(score)
-                jump expression nextScene
+            return 
+
+# here is a demonstration.
+label snek: 
+    $ global snakeField
+    $ snakeField = SnakeField()
+    $ score = snakeField.startSnek()
+    $ cleanSnek()
+    call snekMenu(score)
+    return score

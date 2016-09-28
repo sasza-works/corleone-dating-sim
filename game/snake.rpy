@@ -180,7 +180,7 @@ init python:
         return
 
     def quit():
-        return snakeField.endRound()
+        snakeField.endRound()
 
 screen snekscreen(spritemanager):
     modal True
@@ -198,7 +198,7 @@ screen snekscreen(spritemanager):
             key "a" action goLeft
             key "s" action goDown
             key "d" action goRight
-            key "m" action Return(2)
+            key "m" action quit
 
 # control flow still not completely proper
 label snekMenu(score):
